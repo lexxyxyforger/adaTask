@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    @include('partials.settings-boot')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profil - WongTask</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -677,6 +677,184 @@
 
     .modal-close:hover { background: var(--bg); }
 
+    /* ── SETTINGS MODAL ── */
+    .settings-section-title {
+        font-size: .7rem;
+        font-weight: 800;
+        color: var(--muted);
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        margin-top: 16px;
+    }
+
+    .settings-section-title:first-child { margin-top: 0; }
+
+    /* Toggle switch */
+    .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg);
+        border-radius: 12px;
+        padding: 13px 14px;
+        margin-bottom: 7px;
+    }
+
+    .setting-row:last-of-type { margin-bottom: 0; }
+
+    .setting-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .setting-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .setting-icon svg { width: 17px; height: 17px; }
+
+    .setting-icon.green  { background: #e6f7ea; color: #2a8f43; }
+    .setting-icon.orange { background: #fff3e0; color: #b8692a; }
+    .setting-icon.blue   { background: #e3f1ff; color: #2f70a9; }
+
+    .setting-text strong {
+        display: block;
+        font-size: .84rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .setting-text small {
+        font-size: .72rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* Toggle */
+    .toggle-wrap {
+        position: relative;
+        width: 44px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+
+    .toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+    .toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: #d8d0c4;
+        border-radius: 99px;
+        cursor: pointer;
+        transition: background .25s;
+    }
+
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        top: 3px;
+        left: 3px;
+        transition: transform .25s;
+        box-shadow: 0 1px 4px rgba(0,0,0,.18);
+    }
+
+    .toggle-wrap input:checked + .toggle-slider {
+        background: var(--brand);
+    }
+
+    .toggle-wrap input:checked + .toggle-slider::before {
+        transform: translateX(18px);
+    }
+
+    /* Profile card in settings */
+    .settings-profile-card {
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 7px;
+    }
+
+    .settings-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7a4b23, #c07c3a);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .settings-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .settings-profile-info strong {
+        display: block;
+        font-size: .9rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .settings-profile-info span {
+        font-size: .74rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .settings-stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .settings-stat {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 10px 6px;
+        text-align: center;
+    }
+
+    .settings-stat strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--brand);
+    }
+
+    .settings-stat small {
+        font-size: .65rem;
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    /* Power-saving mode: reduce animations */
+    body.power-save * {
+        animation: none !important;
+        transition: none !important;
+    }
     </style>
 </head>
 
@@ -829,19 +1007,19 @@
                 <span class="menu-chevron">›</span>
             </a>
 
-            <a href="{{ route('projects.index') }}" class="menu-item">
+            <button type="button" class="menu-item" style="width:100%;background:none;font-family:inherit;text-align:left;"
+                onclick="openSettingsModal()">
                 <div class="menu-item-left">
                     <div class="menu-item-icon">
                         <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
                         </svg>
                     </div>
                     Pengaturan
                 </div>
                 <span class="menu-chevron">›</span>
-            </a>
+            </button>
 
             <form class="menu-form" method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -866,6 +1044,112 @@
         @php
         $profileTasksProjectId = \App\Models\Project::query()->where('user_id', $user?->id)->value('id');
         @endphp
+
+        {{-- ── SETTINGS MODAL ── --}}
+        <div class="modal-backdrop" id="settings-modal" onclick="closeSettingsModal(event)">
+            <div class="modal-sheet">
+                <p class="modal-title">Pengaturan</p>
+
+                {{-- Profil Gw --}}
+                <div class="settings-section-title">Profil Gw</div>
+
+                <div class="settings-profile-card">
+                    <div class="settings-avatar">
+                        @if($user->avatar_url)
+                            <img src="{{ $user->avatar_url }}" alt="avatar">
+                        @else
+                            {{ strtoupper(mb_substr($user->name ?? 'W', 0, 1)) }}
+                        @endif
+                    </div>
+                    <div class="settings-profile-info">
+                        <strong>{{ $user->name ?? 'Wong' }}</strong>
+                        <span>{{ $user->email ?? '' }}</span>
+                        @if($user->bio)
+                        <span style="display:block;margin-top:2px;font-style:italic;">{{ $user->bio }}</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="settings-stats-row">
+                    <div class="settings-stat">
+                        <strong>{{ $totalTasks ?? 0 }}</strong>
+                        <small>Total Tugas</small>
+                    </div>
+                    <div class="settings-stat">
+                        <strong>{{ $totalProjects ?? 0 }}</strong>
+                        <small>Proyek</small>
+                    </div>
+                    <div class="settings-stat">
+                        <strong>{{ $productivity ?? 0 }}%</strong>
+                        <small>Produktivitas</small>
+                    </div>
+                </div>
+
+                {{-- Preferensi --}}
+                <div class="settings-section-title">Preferensi</div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-icon green">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <div class="setting-text">
+                            <strong>Hemat Daya</strong>
+                            <small>Matikan animasi &amp; efek gerak</small>
+                        </div>
+                    </div>
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="power-save-toggle" onchange="togglePowerSave(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-icon orange">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M18 8h1a4 4 0 010 8h-1"/>
+                                <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                                <line x1="6" y1="1" x2="6" y2="4"/>
+                                <line x1="10" y1="1" x2="10" y2="4"/>
+                                <line x1="14" y1="1" x2="14" y2="4"/>
+                            </svg>
+                        </div>
+                        <div class="setting-text">
+                            <strong>Notifikasi Deadline</strong>
+                            <small>Ingatkan tugas yang mendekati deadline</small>
+                        </div>
+                    </div>
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="notif-toggle" onchange="toggleSetting('notif', this.checked)" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-icon blue">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <div class="setting-text">
+                            <strong>Tampilkan Deadline</strong>
+                            <small>Tampilkan tanggal di daftar tugas</small>
+                        </div>
+                    </div>
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="deadline-toggle" onchange="toggleSetting('showDeadline', this.checked)" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <button class="modal-close" onclick="closeSettingsModalBtn()">Tutup</button>
+            </div>
+        </div>
 
         {{-- ── AVATAR MODAL ── --}}
         <div class="modal-backdrop" id="avatar-modal" onclick="closeAvatarModal(event)">
@@ -1127,6 +1411,48 @@
                 img.src = src;
             }
         }
+
+        // \u2500\u2500 Settings modal \u2500\u2500
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.add('open');
+        }
+
+        function closeSettingsModal(e) {
+            if (e.target === document.getElementById('settings-modal')) closeSettingsModalBtn();
+        }
+
+        function closeSettingsModalBtn() {
+            document.getElementById('settings-modal').classList.remove('open');
+        }
+
+        // Hemat daya: matikan semua animasi & transition
+        function togglePowerSave(on) {
+            document.body.classList.toggle('power-save', on);
+            localStorage.setItem('wongtask_power_save', on ? '1' : '0');
+        }
+
+        // Generic setting toggle (disimpan di localStorage)
+        function toggleSetting(key, val) {
+            localStorage.setItem('wongtask_' + key, val ? '1' : '0');
+        }
+
+        // ── Init: baca semua preferensi dari localStorage ──
+        (function initSettings() {
+            // Hemat daya
+            const ps = localStorage.getItem('wongtask_power_save') === '1';
+            const psEl = document.getElementById('power-save-toggle');
+            if (ps) { document.body.classList.add('power-save'); if (psEl) psEl.checked = true; }
+
+            // Notifikasi
+            const notif = localStorage.getItem('wongtask_notif');
+            const notifEl = document.getElementById('notif-toggle');
+            if (notif === '0' && notifEl) notifEl.checked = false;
+
+            // Tampilkan Deadline
+            const dl = localStorage.getItem('wongtask_showDeadline');
+            const dlEl = document.getElementById('deadline-toggle');
+            if (dl === '0' && dlEl) dlEl.checked = false;
+        })();
         </script>
 
     </div>

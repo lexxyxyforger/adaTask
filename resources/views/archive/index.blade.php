@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    @include('partials.settings-boot')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arsip – WongTask</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
