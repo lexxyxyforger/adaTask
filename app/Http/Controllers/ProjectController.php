@@ -9,14 +9,41 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::withCount([
-            'tasks',
-            'tasks as done_tasks_count' => fn ($query) => $query->where('status', 'done'),
-        ])->where('user_id', Auth::id())->latest()->get();
+        $filter = $request->query('filter', 'semua'); // semua|aktif|selesai|arsip
+        $search = $request->query('q', '');
 
-        return view('projects.index', compact('projects'));
+        $query = Project::withCount([
+            'tasks',
+            'tasks as done_tasks_count' => fn ($q) => $q->where('status', 'done'),
+        ])->where('user_id', Auth::id());
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $allProjects = $query->latest()->get();
+
+        // Filter client-side (di PHP) berdasarkan completion
+        $projects = match ($filter) {
+            'aktif'   => $allProjects->filter(fn ($p) => $p->tasks_count > 0 && ($p->done_tasks_count < $p->tasks_count)),
+            'selesai' => $allProjects->filter(fn ($p) => $p->tasks_count > 0 && ($p->done_tasks_count >= $p->tasks_count)),
+            'arsip'   => $allProjects->filter(fn ($p) => $p->tasks_count === 0),
+            default   => $allProjects,
+        };
+
+        return view('projects.index', [
+            'projects' => $projects,
+            'filter'   => $filter,
+            'search'   => $search,
+            'counts'   => [
+                'semua'   => $allProjects->count(),
+                'aktif'   => $allProjects->filter(fn ($p) => $p->tasks_count > 0 && $p->done_tasks_count < $p->tasks_count)->count(),
+                'selesai' => $allProjects->filter(fn ($p) => $p->tasks_count > 0 && $p->done_tasks_count >= $p->tasks_count)->count(),
+                'arsip'   => $allProjects->filter(fn ($p) => $p->tasks_count === 0)->count(),
+            ],
+        ]);
     }
 
     public function show(Request $request, Project $project)

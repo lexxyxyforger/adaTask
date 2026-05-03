@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     @include('partials.settings-boot')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender - WongTask</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Kalender – WongTask</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -418,49 +419,121 @@
         background: var(--brand);
     }
 
+    /* ── HEADER ADD BTN ── */
+    .header-add-btn {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: var(--brand); border: none;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #fff; font-size: 1.3rem; line-height:1;
+        box-shadow: 0 4px 14px rgba(122,75,35,.35);
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .header-add-btn:hover  { background: var(--brand-light); }
+    .header-add-btn:active { transform: scale(.93); }
+
+    /* ── FAB ── */
+    .fab {
+        position: fixed; bottom: 82px;
+        right: calc(50% - 215px + 16px);
+        width: 52px; height: 52px; border-radius: 50%;
+        background: var(--brand); color: #fff; border: none;
+        font-size: 1.6rem; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 6px 22px rgba(88,51,24,.4);
+        cursor: pointer; z-index: 90; text-decoration: none;
+        transition: background .15s, transform .1s;
+        line-height: 1;
+    }
+    .fab:hover  { background: var(--brand-light); }
+    .fab:active { transform: scale(.93); }
+    @media (max-width: 430px) { .fab { right: 16px; } }
+
+    /* ── QUICK-ADD MODAL ── */
+    .modal-backdrop {
+        display: none; position: fixed; inset: 0;
+        background: rgba(20,12,6,.5); z-index: 200;
+        align-items: flex-end; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; animation: fadeIn .18s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .modal-sheet {
+        width: 100%; max-width: 430px;
+        background: var(--card); border-radius: 24px 24px 0 0;
+        padding: 20px 20px 36px;
+        animation: slideUp .22s ease;
+    }
+    @keyframes slideUp {
+        from { transform: translateY(40px); opacity:0; }
+        to   { transform: translateY(0);    opacity:1; }
+    }
+    .modal-handle {
+        width: 40px; height: 4px; border-radius: 99px;
+        background: var(--line); margin: 0 auto 16px;
+    }
+    .modal-title {
+        font-size: 1rem; font-weight: 800; color: var(--ink);
+        margin-bottom: 4px;
+    }
+    .modal-subtitle {
+        font-size: .75rem; color: var(--muted); font-weight: 500;
+        margin-bottom: 16px;
+    }
+    .modal-field {
+        margin-bottom: 10px;
+    }
+    .modal-field label {
+        display: block; font-size: .72rem; font-weight: 700;
+        color: var(--muted); margin-bottom: 5px; letter-spacing: .2px;
+    }
+    .modal-field input,
+    .modal-field select {
+        width: 100%; border: 1px solid var(--line); border-radius: 10px;
+        padding: 10px 12px; font-size: .84rem; font-family: inherit;
+        color: var(--ink); background: #fdfaf6; outline: none;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .modal-field input:focus,
+    .modal-field select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(122,75,35,.1);
+    }
+    .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .modal-submit {
+        width: 100%; border: none; border-radius: 12px;
+        background: var(--brand); color: #fff;
+        padding: 13px; font-size: .9rem; font-weight: 700;
+        font-family: inherit; cursor: pointer; margin-top: 14px;
+        transition: background .15s; display: flex;
+        align-items: center; justify-content: center; gap: 6px;
+    }
+    .modal-submit:hover { background: var(--brand-light); }
+    .modal-submit:disabled { opacity: .6; cursor: not-allowed; }
+    .modal-cancel {
+        width: 100%; border: 1px solid var(--line); border-radius: 12px;
+        background: none; color: var(--muted);
+        padding: 11px; font-size: .84rem; font-weight: 600;
+        font-family: inherit; cursor: pointer; margin-top: 8px;
+        transition: background .15s;
+    }
+    .modal-cancel:hover { background: var(--bg); }
+
     /* Scroll area */
     .scroll-area {
-        overflow-y: auto;
-        height: 100%;
-        padding-bottom: 80px;
+        overflow-y: auto; height: 100%; padding-bottom: 80px;
     }
 
-    /* Fade-in animation */
     @keyframes fadeUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-
-    .task-item {
-        animation: fadeUp .25s ease both;
-    }
-
-    .task-item:nth-child(1) {
-        animation-delay: .05s;
-    }
-
-    .task-item:nth-child(2) {
-        animation-delay: .10s;
-    }
-
-    .task-item:nth-child(3) {
-        animation-delay: .15s;
-    }
-
-    .task-item:nth-child(4) {
-        animation-delay: .20s;
-    }
-
-    .task-item:nth-child(5) {
-        animation-delay: .25s;
-    }
+    .task-item { animation: fadeUp .25s ease both; }
+    .task-item:nth-child(1) { animation-delay: .05s; }
+    .task-item:nth-child(2) { animation-delay: .10s; }
+    .task-item:nth-child(3) { animation-delay: .15s; }
+    .task-item:nth-child(4) { animation-delay: .20s; }
+    .task-item:nth-child(5) { animation-delay: .25s; }
     </style>
 </head>
 
@@ -470,15 +543,12 @@
         {{-- ── HEADER ── --}}
         <div class="header">
             <h1 class="header-title">Kalender</h1>
-            <div class="header-icon-btn">
-                {{-- Calendar icon --}}
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
+            <button class="header-add-btn" onclick="openAddModal()" aria-label="Tambah kegiatan">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
-            </div>
+            </button>
         </div>
 
         {{-- ── CALENDAR CARD ── --}}
@@ -616,7 +686,58 @@
 
         @php
         $calendarTasksProjectId = $tasks->first()?->project?->id;
+        $projects = \App\Models\Project::where('user_id', auth()->id())->latest()->get();
         @endphp
+
+        {{-- ── FAB ── --}}
+        <button class="fab" onclick="openAddModal()" aria-label="Tambah kegiatan">+</button>
+
+        {{-- ── QUICK-ADD MODAL ── --}}
+        <div class="modal-backdrop" id="add-modal" onclick="closeIfBackdrop(event)">
+            <div class="modal-sheet">
+                <div class="modal-handle"></div>
+                <div class="modal-title">Tambah Kegiatan</div>
+                <div class="modal-subtitle" id="modal-date-label">
+                    📅 {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('d F Y') }}
+                </div>
+
+                <div class="modal-field">
+                    <label>Nama Tugas *</label>
+                    <input type="text" id="qa-title" placeholder="Contoh: Review desain UI" autocomplete="off">
+                </div>
+                <div class="modal-row">
+                    <div class="modal-field">
+                        <label>Proyek</label>
+                        <select id="qa-project">
+                            <option value="">— Pilih Proyek —</option>
+                            @foreach($projects as $p)
+                            <option value="{{ $p->id }}">{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label>Prioritas</label>
+                        <select id="qa-priority">
+                            <option value="medium">Medium</option>
+                            <option value="high">Tinggi</option>
+                            <option value="low">Rendah</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-field">
+                    <label>Deadline</label>
+                    <input type="date" id="qa-deadline" value="{{ $selectedDate }}">
+                </div>
+
+                <button class="modal-submit" id="qa-submit" onclick="submitQuickAdd()">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Tambah Kegiatan
+                </button>
+                <button class="modal-cancel" onclick="closeAddModal()">Batal</button>
+            </div>
+        </div>
 
         {{-- ── BOTTOM NAVIGATION ── --}}
         <nav class="bottom-nav">
@@ -667,17 +788,94 @@
 
         </nav>
 
-        {{-- Auto-reload script --}}
         <script>
-        (() => {
-            const ms = 15000;
-            setInterval(() => {
-                const focused = !!document.querySelector('input:focus,textarea:focus,select:focus');
-                if (document.visibilityState === 'visible' && !focused) {
+        const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+        const SELECTED_DATE = '{{ $selectedDate }}';
+
+        // ── Modal open/close ──
+        function openAddModal() {
+            document.getElementById('add-modal').classList.add('open');
+            document.getElementById('qa-title').focus();
+        }
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.remove('open');
+        }
+        function closeIfBackdrop(e) {
+            if (e.target === document.getElementById('add-modal')) closeAddModal();
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAddModal(); });
+
+        // ── Quick-add submit via AJAX ──
+        async function submitQuickAdd() {
+            const title    = document.getElementById('qa-title').value.trim();
+            const projId   = document.getElementById('qa-project').value;
+            const priority = document.getElementById('qa-priority').value;
+            const deadline = document.getElementById('qa-deadline').value;
+            const btn      = document.getElementById('qa-submit');
+
+            if (!title) {
+                document.getElementById('qa-title').focus();
+                document.getElementById('qa-title').style.borderColor = '#e53935';
+                return;
+            }
+            if (!projId) {
+                document.getElementById('qa-project').style.borderColor = '#e53935';
+                document.getElementById('qa-project').focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            try {
+                const fd = new FormData();
+                fd.append('_token',    CSRF);
+                fd.append('title',     title);
+                fd.append('priority',  priority);
+                fd.append('deadline',  deadline || SELECTED_DATE);
+
+                const res = await fetch(`/projects/${projId}/tasks`, {
+                    method: 'POST', body: fd,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                    redirect: 'manual',
+                });
+
+                // Laravel redirects on success (3xx)
+                if (res.ok || res.status === 302 || res.type === 'opaqueredirect') {
+                    closeAddModal();
+                    // Reset form
+                    document.getElementById('qa-title').value = '';
+                    document.getElementById('qa-project').value = '';
+                    document.getElementById('qa-priority').value = 'medium';
+                    // Reload page to show new task
                     window.location.reload();
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert(data.message || 'Gagal menyimpan. Coba lagi.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Tambah Kegiatan';
                 }
-            }, ms);
-        })();
+            } catch(err) {
+                alert('Koneksi gagal, coba lagi.');
+                btn.disabled = false;
+                btn.textContent = 'Tambah Kegiatan';
+            }
+        }
+
+        // Enter key shortcut in title field
+        document.getElementById('qa-title')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') submitQuickAdd();
+        });
+
+        // ── Realtime auto-reload (every 20s, skip when modal open or input focused) ──
+        setInterval(() => {
+            const modalOpen = document.getElementById('add-modal').classList.contains('open');
+            const focused   = !!document.querySelector('input:focus,textarea:focus,select:focus');
+            if (document.visibilityState === 'visible' && !modalOpen && !focused) {
+                window.location.reload();
+            }
+        }, 20000);
         </script>
 
     </div>{{-- /phone --}}

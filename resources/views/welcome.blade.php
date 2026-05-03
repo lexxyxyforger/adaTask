@@ -182,49 +182,65 @@
         font-size: .83rem;
     }
 
-    /* Mascot */
-    .mascot-link {
-        position: absolute;
-        bottom: -2px;
-        right: 14px;
-        z-index: 3;
-        display: inline-block;
-        text-decoration: none;
-    }
-
-    .mascot-img {
-        width: 115px;
-        filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .3));
-        animation: bob 3.5s ease-in-out infinite;
-    }
-
-    .mascot-fallback {
-        display: none;
-        width: 110px;
-        height: 110px;
-        border-radius: 14px;
-        background: linear-gradient(145deg, #1f1f1f, #5c3d2e);
-        color: #fff;
-        font-weight: 800;
-        font-size: .92rem;
+    /* ── Clock ── */
+    .clock-box {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        text-align: center;
-        line-height: 1.3;
-        animation: bob 3.5s ease-in-out infinite;
+        gap: 10px;
+        margin-top: 14px;
+        background: rgba(255, 255, 255, .12);
+        border: 1px solid rgba(255, 255, 255, .18);
+        backdrop-filter: blur(6px);
+        border-radius: 14px;
+        padding: 8px 14px;
     }
 
-    @keyframes bob {
-
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-7px);
-        }
+    .clock-time {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 2px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
     }
+
+    .clock-time .clock-colon {
+        opacity: 1;
+        animation: blinkColon 1s step-start infinite;
+    }
+
+    @keyframes blinkColon {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.25; }
+    }
+
+    .clock-divider {
+        width: 1px;
+        height: 28px;
+        background: rgba(255, 255, 255, .25);
+        border-radius: 99px;
+    }
+
+    .clock-right {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .clock-date {
+        font-size: .72rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, .9);
+        white-space: nowrap;
+    }
+
+    .clock-day {
+        font-size: .65rem;
+        color: rgba(255, 255, 255, .6);
+        font-weight: 600;
+    }
+
+
 
     /* ══════════════════════════════
        RINGKASAN CARD
@@ -1017,17 +1033,21 @@
 
             {{-- Greeting --}}
             <div class="greeting">
-                <h1>Halo, {{ $user->name ?? 'Wong' }} 👋</h1>
-                <p>Semangat ngerjain tugas hari ini!</p>
-            </div>
+                <h1>Halo, {{ $user->name ?? 'User' }} 👋</h1>
+                <p>Semangat ya ngerjain tugas hari ini!</p>
 
-            {{-- Mascot --}}
-            <a href="https://i.namu.wiki/i/Ho-LcN-v5XOLvtLlHPZck-XR2_7SXNL2Sy1xnrhWI1o1NTeDxnOGv13EcWtf0ipzhF78Hq1zFgMcw_MkJKjnTQ.webp"
-                class="mascot-link" target="_blank" rel="noopener noreferrer" aria-label="Wong mascot">
-                <img class="mascot-img" src="{{ asset('images/mascot.png') }}" alt="Wong mascot"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                <span class="mascot-fallback">Wong<br>Task</span>
-            </a>
+                {{-- Realtime Clock --}}
+                <div class="clock-box">
+                    <div class="clock-time" id="clockTime">
+                        <span id="clockH">--</span><span class="clock-colon">:</span><span id="clockM">--</span><span class="clock-colon">:</span><span id="clockS">--</span>
+                    </div>
+                    <div class="clock-divider"></div>
+                    <div class="clock-right">
+                        <div class="clock-date" id="clockDate">---</div>
+                        <div class="clock-day" id="clockDay">---</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- ════════ RINGKASAN HARI INI ════════ --}}
@@ -1127,26 +1147,43 @@
                     @endif
                 </div>
                 @if($isDone)
-                <span class="badge b-done">✓ Done</span>
+                <span class="badge b-done">
+                    <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+                    Done
+                </span>
                 @elseif($isProgress)
                 <span class="badge b-prog">● Progress</span>
                 @elseif($isHigh)
                 <span class="badge b-high">! Urgent</span>
                 @else
-                <span class="badge b-todo">◦ To Do</span>
+                <span class="badge b-todo">
+                    <svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>
+                    To Do
+                </span>
                 @endif
                 @if($isProgress)
                 <div class="task-progress" aria-hidden="true"><span></span></div>
                 @endif
             </a>
             @empty
-            <div class="empty">Tidak ada tugas untuk hari ini 🎉</div>
+            <div class="empty">
+                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 8px;color:#c8bfb5">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+                Tidak ada tugas untuk hari ini
+            </div>
             @endforelse
         </div>
 
         {{-- ════════ QUOTE ════════ --}}
         <div class="quote">
-            Santai tapi selesai 😎
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
+                 style="display:inline-block;vertical-align:middle;margin-right:6px;opacity:.7">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Santai tapi selesai
         </div>
 
         <div style="height:90px;"></div>
@@ -1370,7 +1407,275 @@
         fetchData();
         setInterval(fetchData, 15000);
     })();
+
+    /* ── Realtime Clock ── */
+    (function () {
+        const hEl   = document.getElementById('clockH');
+        const mEl   = document.getElementById('clockM');
+        const sEl   = document.getElementById('clockS');
+        const dEl   = document.getElementById('clockDate');
+        const dayEl = document.getElementById('clockDay');
+
+        const DAYS  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function tick() {
+            const now = new Date();
+            if (hEl) hEl.textContent   = pad(now.getHours());
+            if (mEl) mEl.textContent   = pad(now.getMinutes());
+            if (sEl) sEl.textContent   = pad(now.getSeconds());
+            if (dEl) dEl.textContent   = `${pad(now.getDate())} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+            if (dayEl) dayEl.textContent = DAYS[now.getDay()];
+        }
+
+        tick();
+        setInterval(tick, 1000);
+    })();
     </script>
+
+        {{-- ════════ ROAST MODAL ════════ --}}
+        <div id="roast-overlay" aria-modal="true" role="dialog" aria-label="Pemberitahuan Penting">
+            <div id="roast-card">
+
+                {{-- Holographic shimmer bar --}}
+                <div id="roast-shimmer"></div>
+
+                {{-- Crown icon --}}
+                <div id="roast-crown">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 20h20M4 20l2-8 6 4 6-4 2 8"/>
+                        <circle cx="12" cy="8" r="2"/>
+                        <circle cx="4" cy="12" r="2"/>
+                        <circle cx="20" cy="12" r="2"/>
+                    </svg>
+                </div>
+
+                {{-- Badge --}}
+                <div id="roast-badge">
+                    <span>NOTICE</span>
+                </div>
+
+                <h2 id="roast-title">Hei, Kamu! 👋</h2>
+
+                <div id="roast-divider"></div>
+
+                <p id="roast-body">
+                    <span id="roast-emoji-lock">🔒</span><br>
+                    Dilarang mengatur<br>selagi bukan
+                    <strong>Donatur</strong>
+                </p>
+
+                <div id="roast-tag">#IZINNN</div>
+
+                <div id="roast-stamp">Yahahaha</div>
+
+                <button id="roast-btn">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Oke, Paham 👍
+                </button>
+
+                <p id="roast-footer">Terima kasih atas pengertiannya ✨</p>
+            </div>
+        </div>
+
+        <style>
+        /* ── OVERLAY ── */
+        #roast-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(10, 5, 2, .72);
+            backdrop-filter: blur(10px) saturate(1.4);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        #roast-overlay.open {
+            display: flex;
+            animation: roastFadeIn .3s ease;
+        }
+        @keyframes roastFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* ── CARD ── */
+        #roast-card {
+            position: relative;
+            width: 100%; max-width: 320px;
+            background: #1a0f07;
+            border: 1px solid rgba(245, 197, 122, .25);
+            border-radius: 24px;
+            padding: 32px 24px 24px;
+            text-align: center;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(245,197,122,.08),
+                0 20px 60px rgba(0,0,0,.6),
+                0 0 80px rgba(122,75,35,.15);
+            animation: roastSlideUp .4s cubic-bezier(.16,1,.3,1) both;
+        }
+        @keyframes roastSlideUp {
+            from { transform: translateY(40px) scale(.95); opacity: 0; }
+            to   { transform: translateY(0) scale(1);     opacity: 1; }
+        }
+
+        /* shimmer bar */
+        #roast-shimmer {
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #f5c57a 30%,
+                #fff8e7 50%,
+                #f5c57a 70%,
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmerMove 2s linear infinite;
+        }
+        @keyframes shimmerMove {
+            from { background-position: 200% 0; }
+            to   { background-position: -200% 0; }
+        }
+
+        /* crown */
+        #roast-crown {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, #3a1e08, #6a3a18);
+            border: 2px solid rgba(245,197,122,.35);
+            color: #f5c57a;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 20px rgba(245,197,122,.2);
+            animation: roastPop .5s .25s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        @keyframes roastPop {
+            from { transform: scale(0) rotate(-20deg); opacity: 0; }
+            to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+        }
+
+        /* badge */
+        #roast-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(245,197,122,.12);
+            border: 1px solid rgba(245,197,122,.3);
+            border-radius: 99px; padding: 3px 12px; margin-bottom: 12px;
+        }
+        #roast-badge span {
+            font-size: .6rem; font-weight: 800; letter-spacing: 2px;
+            color: #f5c57a;
+        }
+
+        /* title */
+        #roast-title {
+            font-size: 1.25rem; font-weight: 800;
+            color: #fff; margin-bottom: 12px;
+            letter-spacing: -.3px;
+        }
+
+        /* divider */
+        #roast-divider {
+            width: 40px; height: 2px; margin: 0 auto 16px;
+            background: linear-gradient(90deg, transparent, #f5c57a, transparent);
+        }
+
+        /* body */
+        #roast-body {
+            font-size: .95rem; font-weight: 500;
+            color: rgba(255,255,255,.75);
+            line-height: 1.8; margin-bottom: 16px;
+        }
+        #roast-body strong {
+            color: #f5c57a; font-weight: 800;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: rgba(245,197,122,.4);
+        }
+        #roast-emoji-lock {
+            font-size: 2rem; display: block; margin-bottom: 8px;
+            animation: lockShake 1s .6s ease both;
+        }
+        @keyframes lockShake {
+            0%,100% { transform: rotate(0); }
+            20% { transform: rotate(-12deg); }
+            40% { transform: rotate(12deg); }
+            60% { transform: rotate(-8deg); }
+            80% { transform: rotate(8deg); }
+        }
+
+        /* tag */
+        #roast-tag {
+            font-size: 1.1rem; font-weight: 900;
+            letter-spacing: 1px; margin-bottom: 20px;
+            background: linear-gradient(135deg, #f5c57a, #e07b39);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* rubber stamp */
+        #roast-stamp {
+            position: absolute; top: 22px; right: -14px;
+            background: transparent;
+            border: 3px solid rgba(220, 50, 50, .55);
+            color: rgba(220, 50, 50, .55);
+            font-size: .55rem; font-weight: 900; letter-spacing: 2px;
+            padding: 4px 10px; border-radius: 4px;
+            transform: rotate(18deg);
+            pointer-events: none;
+        }
+
+        /* button */
+        #roast-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: linear-gradient(135deg, #7a4b23, #c07c3a);
+            border: none; border-radius: 12px;
+            color: #fff; font-size: .88rem; font-weight: 700;
+            font-family: inherit; padding: 12px 28px;
+            cursor: pointer; width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 18px rgba(122,75,35,.4);
+            transition: transform .12s, box-shadow .12s;
+        }
+        #roast-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(122,75,35,.5);
+        }
+        #roast-btn:active { transform: scale(.97); }
+
+        /* footer */
+        #roast-footer {
+            font-size: .7rem; color: rgba(255,255,255,.3);
+            margin-top: 12px; font-weight: 500;
+        }
+        </style>
+
+        <script>
+        /* ── ROAST MODAL ── */
+        (function() {
+            const overlay = document.getElementById('roast-overlay');
+            const btn     = document.getElementById('roast-btn');
+
+            // Tampil setiap kali halaman dibuka (tanpa sessionStorage agar selalu muncul)
+            setTimeout(() => {
+                overlay.classList.add('open');
+            }, 600);
+
+            btn.addEventListener('click', () => {
+                overlay.style.animation = 'roastFadeIn .2s ease reverse forwards';
+                setTimeout(() => overlay.classList.remove('open'), 200);
+            });
+
+            // Klik backdrop juga tutup
+            overlay.addEventListener('click', e => {
+                if (e.target === overlay) btn.click();
+            });
+        })();
+        </script>
+
+        {{-- END ROAST MODAL --}}
 </body>
 
 </html>

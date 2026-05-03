@@ -115,35 +115,37 @@
         margin-bottom: 14px;
     }
 
+    .hero-progress-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 0;
+    }
+
     .hero-track {
+        flex: 1;
         height: 8px;
         border-radius: 99px;
-        background: rgba(255, 255, 255, .25);
+        background: rgba(255, 255, 255, .22);
         overflow: hidden;
     }
 
     .hero-fill {
         height: 100%;
-
-        width: {
-                {
-                $completion
-            }
-        }
-
-        %;
-        background: #f5c57a;
         border-radius: 99px;
-        transition: width .5s ease;
+        background: linear-gradient(90deg, #f5c57a, #ffe4a0);
+        box-shadow: 0 0 10px rgba(245, 197, 122, .45);
+        transition: width .6s cubic-bezier(.4,0,.2,1);
     }
 
     .hero-pct {
-        position: absolute;
-        right: 20px;
-        bottom: 20px;
-        font-size: .78rem;
-        font-weight: 700;
-        opacity: .9;
+        font-size: .82rem;
+        font-weight: 800;
+        color: #f5c57a;
+        white-space: nowrap;
+        min-width: 38px;
+        text-align: right;
+        letter-spacing: -.3px;
     }
 
     /* ── TABS ── */
@@ -409,16 +411,9 @@
 
     .detail-fill {
         height: 100%;
-
-        width: {
-                {
-                $completion
-            }
-        }
-
-        %;
         border-radius: 99px;
         background: linear-gradient(90deg, #d08e38, #8e5124);
+        transition: width .6s cubic-bezier(.4,0,.2,1);
     }
 
     /* ── FAB ── */
@@ -559,10 +554,12 @@
             </div>
             <h1 class="hero-title">{{ $project->name }}</h1>
             <p class="hero-meta">{{ $doneTasks->count() }} / {{ $tasks->count() }} tugas selesai</p>
-            <div class="hero-track">
-                <div class="hero-fill"></div>
+            <div class="hero-progress-row">
+                <div class="hero-track">
+                    <div class="hero-fill" style="width: {{ $completion }}%"></div>
+                </div>
+                <span class="hero-pct">{{ $completion }}%</span>
             </div>
-            <span class="hero-pct">{{ $completion }}%</span>
         </header>
 
         {{-- ── TABS ── --}}
@@ -701,7 +698,7 @@
                         <span>{{ $completion }}%</span>
                     </div>
                     <div class="detail-track">
-                        <div class="detail-fill"></div>
+                        <div class="detail-fill" style="width: {{ $completion }}%"></div>
                     </div>
                 </div>
 

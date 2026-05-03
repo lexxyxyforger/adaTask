@@ -132,7 +132,7 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
 
     Route::get('/home', function () {
-        $user = Auth::user();
+        $user = Auth::user()->fresh(); // fresh dari DB agar avatar_url tidak stale
         $projectIds = Project::query()->where('user_id', $user->id)->pluck('id');
         $chartStart = now()->subDays(6)->startOfDay();
         $chartLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -201,7 +201,7 @@ Route::middleware('auth')->group(function () {
     })->name('calendar');
 
     Route::get('/profile', function () {
-        $user = Auth::user();
+        $user = Auth::user()->fresh(); // fresh dari DB
         $projectIds = Project::query()->where('user_id', $user->id)->pluck('id');
         $totalTasks = Task::whereIn('project_id', $projectIds)->count();
         $doneTasks  = Task::whereIn('project_id', $projectIds)->where('status', 'done')->count();
@@ -214,6 +214,10 @@ Route::middleware('auth')->group(function () {
             'productivity'  => $productivity,
         ]);
     })->name('profile');
+
+    Route::get('/settings', function () {
+        return view('settings.index');
+    })->name('settings');
 
     Route::get('/archive', function () {
         $user       = Auth::user();
